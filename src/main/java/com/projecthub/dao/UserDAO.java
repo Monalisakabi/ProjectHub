@@ -4,6 +4,7 @@ import com.projecthub.entity.User;
 import com.projecthub.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import java.util.List;
 
 import java.util.Optional;
 
@@ -43,4 +44,21 @@ public class UserDAO {
             return Optional.ofNullable(user);
         }
     }
+    public java.util.List<User> findAllExcept(Long userId) {
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            return session.createQuery(
+                            "FROM User u WHERE u.id <> :userId ORDER BY u.name",
+                            User.class)
+                    .setParameter("userId", userId)
+                    .getResultList();
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Unable to fetch other users.", e
+            );
+        }
+    }
+
 }

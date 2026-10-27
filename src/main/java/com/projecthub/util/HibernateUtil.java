@@ -3,6 +3,7 @@ package com.projecthub.util;
 import com.projecthub.entity.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import com.projecthub.entity.Follow;
 
 public class HibernateUtil {
 
@@ -18,6 +19,7 @@ public class HibernateUtil {
 
             // Register the User entity
             configuration.addAnnotatedClass(User.class);
+            configuration.addAnnotatedClass(Follow.class);
 
             // Read database credentials from environment variables
             String username = System.getenv("PROJECTHUB_DB_USER");
