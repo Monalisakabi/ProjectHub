@@ -60,5 +60,36 @@ public class UserDAO {
             );
         }
     }
+    public User findById(Long id) {
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            return session.get(User.class, id);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to find user by ID.", e);
+        }
+    }
+
+    public void update(User user) {
+        Transaction transaction = null;
+
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+
+            session.merge(user);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+
+            throw new RuntimeException("Unable to update user.", e);
+        }
+    }
 
 }

@@ -5,7 +5,6 @@
 <%@ page import="com.projecthub.service.FollowService" %>
 
 <%
-    // Check whether the user is logged in
     Object sessionUserId = session.getAttribute("userId");
 
     if (!(sessionUserId instanceof Number)) {
@@ -15,25 +14,19 @@
 
     Long currentUserId = ((Number) sessionUserId).longValue();
 
-    // Initialize FollowService
     FollowService followService = new FollowService();
 
-    // Fetch all other registered developers
-    List<User> otherUsers =
-            followService.getOtherUsers(currentUserId);
+    List<User> otherUsers = followService.getOtherUsers(currentUserId);
 
-    // Fetch IDs of developers followed by the current user
     Set<Long> followingUserIds =
             followService.getFollowingUserIds(currentUserId);
 
-    // Get the logged-in user's name
     String userName = (String) session.getAttribute("userName");
 
     if (userName == null || userName.trim().isEmpty()) {
         userName = "User";
     }
 
-    // Escape HTML characters to prevent HTML injection
     String safeUserName = userName
             .replace("&", "&amp;")
             .replace("<", "&lt;")
@@ -69,6 +62,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
@@ -78,12 +73,33 @@
             color: #2563eb;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-btn {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .profile-link {
+            background: #e0e7ff;
+            color: #1d4ed8;
+        }
+
+        .profile-link:hover {
+            background: #c7d2fe;
+        }
+
         .logout {
             background: #2563eb;
             color: white;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 6px;
         }
 
         .logout:hover {
@@ -142,7 +158,39 @@
             font-size: 13px;
         }
 
-        /* Discover Developers section */
+        /* Dashboard feature cards */
+
+        .feature-card {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-card:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 3px;
+        }
+
+        .feature-card h2 {
+            color: #2563eb;
+        }
+
+        .feature-hint {
+            display: inline-block;
+            margin-top: 8px;
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Discover Developers */
+
         .developers {
             margin-top: 35px;
             background: #ffffff;
@@ -225,6 +273,14 @@
                 font-size: 21px;
             }
 
+            .header-actions {
+                gap: 8px;
+            }
+
+            .header-btn {
+                padding: 9px 12px;
+            }
+
             .welcome {
                 padding: 25px;
             }
@@ -245,15 +301,25 @@
 <header>
     <div class="logo">ProjectHub</div>
 
-    <a class="logout"
-       href="<%= request.getContextPath() %>/logout">
-        Log Out
-    </a>
+    <div class="header-actions">
+
+        <a class="header-btn profile-link"
+           href="<%= request.getContextPath() %>/profile">
+            My Profile
+        </a>
+
+        <a class="header-btn logout"
+           href="<%= request.getContextPath() %>/logout">
+            Log Out
+        </a>
+
+    </div>
 </header>
 
 <main>
 
     <!-- Welcome section -->
+
     <section class="welcome">
 
         <h1>Welcome, <%= safeUserName %>! 👋</h1>
@@ -268,32 +334,47 @@
     </section>
 
     <!-- Dashboard feature cards -->
+
     <section class="cards">
 
-        <div class="card">
+        <a class="card feature-card"
+           href="<%= request.getContextPath() %>/profile">
+
             <h2>👤 My Profile</h2>
+
             <p>
-                Manage your personal information, skills, and social links.
+                Manage your personal information, bio,
+                GitHub URL, and LinkedIn URL.
             </p>
-        </div>
+
+            <span class="feature-hint">Edit Profile →</span>
+
+        </a>
 
         <div class="card">
+
             <h2>💻 Projects</h2>
+
             <p>
                 Create projects, showcase your work, and discover new ideas.
             </p>
+
         </div>
 
         <div class="card">
+
             <h2>🤝 Collaboration</h2>
+
             <p>
                 Connect with other developers and collaborate on projects.
             </p>
+
         </div>
 
     </section>
 
     <!-- Discover Developers section -->
+
     <section class="developers">
 
         <h2>👥 Discover Developers</h2>
