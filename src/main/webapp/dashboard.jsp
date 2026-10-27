@@ -227,6 +227,22 @@
             margin-top: 0;
             overflow-wrap: anywhere;
         }
+        .developer-name-link {
+            color: #2563eb;
+            text-decoration: none;
+            overflow-wrap: anywhere;
+        }
+
+        .developer-name-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        .developer-name-link:focus-visible {
+            outline: 2px solid #93c5fd;
+            outline-offset: 3px;
+        }
+
 
         .developer-card p {
             color: #6b7280;
@@ -292,6 +308,7 @@
             main {
                 margin: 25px auto;
             }
+
         }
     </style>
 </head>
@@ -415,9 +432,17 @@
 
             <div class="developer-card">
 
-                <h3><%= safeDeveloperName %></h3>
+
+                <h3>
+                    <a href="<%= request.getContextPath() %>/public-profile?id=<%= developer.getId() %>"
+                       class="developer-name-link">
+                        <%= safeDeveloperName %>
+                    </a>
+                </h3>
 
                 <p>ProjectHub Developer</p>
+
+
 
                 <form
                         action="<%= request.getContextPath() %>/follow"
