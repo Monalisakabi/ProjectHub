@@ -376,6 +376,10 @@
                 Create projects, showcase your work, and discover new ideas.
             </p>
 
+            <a href="${pageContext.request.contextPath}/projects">
+                View Projects →
+            </a>
+
         </div>
 
         <div class="card">

@@ -1,5 +1,6 @@
 package com.projecthub.util;
 
+import com.projecthub.entity.Project;
 import com.projecthub.entity.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -19,6 +20,7 @@ public class HibernateUtil {
 
             // Register the User entity
             configuration.addAnnotatedClass(User.class);
+            configuration.addAnnotatedClass(Project.class);
             configuration.addAnnotatedClass(Follow.class);
 
             // Read database credentials from environment variables
