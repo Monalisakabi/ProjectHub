@@ -147,4 +147,42 @@ public class FollowDAO {
             return new HashSet<>(followedIds);
         }
     }
+
+    // Get users who follow the specified user
+    public List<User> getFollowers(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null.");
+        }
+
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            return session.createQuery(
+                            "SELECT f.follower FROM Follow f " +
+                                    "WHERE f.followed.id = :userId " +
+                                    "ORDER BY f.follower.name ASC",
+                            User.class)
+                    .setParameter("userId", userId)
+                    .getResultList();
+        }
+    }
+
+    // Get users followed by the specified user
+    public List<User> getFollowing(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null.");
+        }
+
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            return session.createQuery(
+                            "SELECT f.followed FROM Follow f " +
+                                    "WHERE f.follower.id = :userId " +
+                                    "ORDER BY f.followed.name ASC",
+                            User.class)
+                    .setParameter("userId", userId)
+                    .getResultList();
+        }
+    }
 }

@@ -67,4 +67,22 @@ public class FollowService {
 
         return userDAO.findAllExcept(currentUserId);
     }
+
+    // Get the list of users who follow this user
+    public List<User> getFollowers(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null.");
+        }
+
+        return followDAO.getFollowers(userId);
+    }
+
+    // Get the list of users this user follows
+    public List<User> getFollowing(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null.");
+        }
+
+        return followDAO.getFollowing(userId);
+    }
 }

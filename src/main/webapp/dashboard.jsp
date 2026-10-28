@@ -388,6 +388,31 @@
 
         </div>
 
+        <a class="card feature-card"
+           href="<%= request.getContextPath() %>/followers">
+
+            <h2>👥 My Followers</h2>
+
+            <p>
+                See the developers who follow you.
+            </p>
+
+            <span class="feature-hint">View Followers →</span>
+        </a>
+
+        <a class="card feature-card"
+           href="<%= request.getContextPath() %>/following">
+
+            <h2>🤝 Following</h2>
+
+            <p>
+                See the developers you follow.
+            </p>
+
+            <span class="feature-hint">View Following →</span>
+        </a>
+
+
     </section>
 
     <!-- Discover Developers section -->
@@ -494,6 +519,7 @@
     </section>
 
 </main>
+
 
 </body>
 </html>
