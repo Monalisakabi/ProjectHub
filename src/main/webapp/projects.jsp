@@ -136,6 +136,28 @@
             + Create Project
         </a>
     </div>
+    <!-- Search Projects -->
+    <form action="${pageContext.request.contextPath}/projects"
+          method="get"
+          style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+
+        <input type="text"
+               name="keyword"
+               placeholder="Search by title, description, or technology..."
+               value="<c:out value='${keyword}'/>"
+               style="flex: 1; min-width: 220px; padding: 12px;
+                      border: 1px solid #cbd5e1; border-radius: 7px;">
+
+        <button type="submit" class="button">
+            Search
+        </button>
+
+        <a class="button"
+           href="${pageContext.request.contextPath}/projects"
+           style="background: #64748b;">
+            Clear
+        </a>
+    </form>
 
     <c:choose>
         <c:when test="${empty projects}">

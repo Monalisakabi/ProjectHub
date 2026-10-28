@@ -108,7 +108,16 @@ public class ProjectServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Project> projects = projectService.getAllProjects();
+        String keyword = request.getParameter("keyword");
+
+        List<Project> projects;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            projects = projectService.searchProjects(keyword.trim());
+            request.setAttribute("keyword", keyword);
+        } else {
+            projects = projectService.getAllProjects();
+        }
 
         request.setAttribute("projects", projects);
 

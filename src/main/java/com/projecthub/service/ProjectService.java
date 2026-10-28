@@ -56,6 +56,13 @@ public class ProjectService {
     public List<Project> getAllProjects() {
         return projectDAO.findAll();
     }
+    public List<Project> searchProjects(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getAllProjects();
+        }
+
+        return projectDAO.search(keyword);
+    }
 
     public List<Project> getProjectsByOwner(Long ownerId) {
         if (ownerId == null) {

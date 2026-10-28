@@ -48,6 +48,22 @@ public class ProjectDAO {
             return Optional.ofNullable(project);
         }
     }
+    public List<Project> search(String keyword) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            String searchKeyword = "%" + keyword.toLowerCase().trim() + "%";
+
+            return session.createQuery(
+                            "FROM Project p JOIN FETCH p.owner " +
+                                    "WHERE LOWER(p.title) LIKE :keyword " +
+                                    "OR LOWER(p.description) LIKE :keyword " +
+                                    "OR LOWER(p.techStack) LIKE :keyword " +
+                                    "ORDER BY p.createdAt DESC",
+                            Project.class)
+                    .setParameter("keyword", searchKeyword)
+                    .getResultList();
+        }
+    }
 
     public List<Project> findByOwnerId(Long ownerId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
