@@ -118,7 +118,7 @@
     <h2>ProjectHub</h2>
 
     <nav>
-        <a href="${pageContext.request.contextPath}/dashboard">Dashboard</a>
+        <a href="${pageContext.request.contextPath}/dashboard.jsp">Dashboard</a>
         <a href="${pageContext.request.contextPath}/projects">Projects</a>
         <a href="${pageContext.request.contextPath}/logout">Logout</a>
     </nav>
