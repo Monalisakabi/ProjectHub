@@ -91,5 +91,30 @@ public class UserDAO {
             throw new RuntimeException("Unable to update user.", e);
         }
     }
+    public List<User> searchUsersByName(String name, Long currentUserId) {
+        if (name == null || name.trim().isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            return session.createQuery(
+                            "FROM User u " +
+                                    "WHERE u.id <> :userId " +
+                                    "AND LOWER(u.name) LIKE :name " +
+                                    "ORDER BY u.name",
+                            User.class)
+                    .setParameter("userId", currentUserId)
+                    .setParameter("name", "%" + name.trim().toLowerCase() + "%")
+                    .setMaxResults(50)
+                    .getResultList();
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Unable to search developers.", e
+            );
+        }
+    }
 
 }
