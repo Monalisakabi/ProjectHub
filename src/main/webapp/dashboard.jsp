@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
@@ -45,7 +46,6 @@
     <title>Dashboard | ProjectHub</title>
 
     <style>
-
         :root {
             --ink: #202044;
             --muted: #70708b;
@@ -57,9 +57,13 @@
             --shadow: 0 18px 45px rgba(50, 35, 120, .10);
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+        }
 
         body {
             margin: 0;
@@ -98,7 +102,12 @@
             color: transparent;
         }
 
-        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
         .header-btn {
             display: inline-flex;
@@ -112,15 +121,38 @@
             transition: transform .2s, box-shadow .2s, background .2s;
         }
 
-        .header-btn:hover { transform: translateY(-2px); }
-        .profile-link { background: #f0eaff; color: #5b21b6; }
-        .profile-link:hover { background: #e5d9ff; }
+        .header-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .profile-link {
+            background: #f0eaff;
+            color: #5b21b6;
+        }
+
+        .profile-link:hover {
+            background: #e5d9ff;
+        }
+
+        /* NEW: Notifications navigation button */
+        .notification-link {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .notification-link:hover {
+            background: #bfdbfe;
+        }
+
         .logout {
             color: white;
             background: linear-gradient(110deg, #6d28d9, #3b82f6);
             box-shadow: 0 7px 16px rgba(91, 33, 182, .20);
         }
-        .logout:hover { box-shadow: 0 10px 22px rgba(91, 33, 182, .28); }
+
+        .logout:hover {
+            box-shadow: 0 10px 22px rgba(91, 33, 182, .28);
+        }
 
         main {
             width: min(1160px, 100%);
@@ -138,15 +170,28 @@
             box-shadow: 0 22px 48px rgba(79, 70, 229, .24);
         }
 
-        .welcome::before, .welcome::after {
+        .welcome::before,
+        .welcome::after {
             content: "";
             position: absolute;
             border-radius: 50%;
             pointer-events: none;
             background: rgba(255, 255, 255, .10);
         }
-        .welcome::before { width: 250px; height: 250px; right: -45px; top: -100px; }
-        .welcome::after { width: 155px; height: 155px; right: 155px; bottom: -105px; }
+
+        .welcome::before {
+            width: 250px;
+            height: 250px;
+            right: -45px;
+            top: -100px;
+        }
+
+        .welcome::after {
+            width: 155px;
+            height: 155px;
+            right: 155px;
+            bottom: -105px;
+        }
 
         .welcome h1 {
             position: relative;
@@ -156,6 +201,7 @@
             letter-spacing: -1.1px;
             line-height: 1.15;
         }
+
         .welcome p {
             position: relative;
             z-index: 1;
@@ -174,19 +220,21 @@
             gap: 8px;
             margin-top: 24px;
             padding: 9px 13px;
-            border: 1px solid rgba(255,255,255,.24);
+            border: 1px solid rgba(255, 255, 255, .24);
             border-radius: 999px;
-            background: rgba(255,255,255,.15);
+            background: rgba(255, 255, 255, .15);
             color: white;
             font-size: 13px;
             font-weight: 750;
         }
+
         .status::before {
             content: "";
-            width: 7px; height: 7px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
             background: #86efac;
-            box-shadow: 0 0 0 4px rgba(134,239,172,.17);
+            box-shadow: 0 0 0 4px rgba(134, 239, 172, .17);
         }
 
         .cards {
@@ -212,28 +260,35 @@
             text-decoration: none;
             transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
         }
+
         .feature-card:hover {
             transform: translateY(-5px);
             border-color: #d7cbff;
             box-shadow: var(--shadow);
         }
-        .feature-card:focus-visible, .header-btn:focus-visible,
-        .developer-name-link:focus-visible, button:focus-visible {
+
+        .feature-card:focus-visible,
+        .header-btn:focus-visible,
+        .developer-name-link:focus-visible,
+        button:focus-visible {
             outline: 3px solid #a5b4fc;
             outline-offset: 4px;
         }
+
         .card h2 {
             margin: 0 0 12px;
             color: #3f2a83;
             font-size: 18px;
             letter-spacing: -.25px;
         }
+
         .card p {
             margin: 0;
             color: var(--muted);
             line-height: 1.65;
             font-size: 14px;
         }
+
         .feature-hint {
             display: inline-block;
             margin-top: 19px;
@@ -247,20 +302,23 @@
             padding: clamp(22px, 4vw, 34px);
             border: 1px solid var(--line);
             border-radius: 26px;
-            background: rgba(255,255,255,.94);
+            background: rgba(255, 255, 255, .94);
             box-shadow: var(--shadow);
         }
+
         .developers h2 {
             margin: 0 0 8px;
             color: #30205f;
             font-size: clamp(22px, 3vw, 28px);
             letter-spacing: -.6px;
         }
+
         .developers-description {
             margin: 0 0 24px;
             color: var(--muted);
             line-height: 1.6;
         }
+
         .developer-search-form {
             display: flex;
             gap: 12px;
@@ -304,23 +362,12 @@
             box-shadow: 0 10px 22px rgba(79, 70, 229, .25);
         }
 
-        @media (max-width: 480px) {
-            .developer-search-form {
-                flex-direction: column;
-            }
-
-            .developer-search-btn {
-            width: 100%;
-        }
-
-        }
-
-
         .developer-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(min(100%, 225px), 1fr));
             gap: 16px;
         }
+
         .developer-card {
             min-width: 0;
             padding: 21px;
@@ -329,29 +376,38 @@
             background: linear-gradient(145deg, #fff 0%, #faf9ff 100%);
             transition: transform .2s, box-shadow .2s, border-color .2s;
         }
+
         .developer-card:hover {
             transform: translateY(-3px);
             border-color: #d9ceff;
             box-shadow: 0 13px 25px rgba(67, 56, 202, .09);
         }
+
         .developer-card h3 {
             margin: 0 0 7px;
             font-size: 17px;
             overflow-wrap: anywhere;
         }
+
         .developer-name-link {
             color: #5b21b6;
             text-decoration: none;
             overflow-wrap: anywhere;
         }
-        .developer-name-link:hover { color: #2563eb; text-decoration: underline; }
+
+        .developer-name-link:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
         .developer-card p {
             margin: 0 0 18px;
             color: var(--muted);
             font-size: 13px;
         }
 
-        .follow-btn, .unfollow-btn {
+        .follow-btn,
+        .unfollow-btn {
             width: 100%;
             min-height: 42px;
             padding: 11px 14px;
@@ -363,16 +419,27 @@
             font-weight: 800;
             transition: transform .18s, box-shadow .18s, filter .18s;
         }
+
         .follow-btn {
             background: linear-gradient(110deg, #6d28d9, #3b82f6);
             box-shadow: 0 7px 14px rgba(79, 70, 229, .17);
         }
+
         .unfollow-btn {
             background: linear-gradient(110deg, #f43f5e, #e11d48);
             box-shadow: 0 7px 14px rgba(225, 29, 72, .13);
         }
-        .follow-btn:hover, .unfollow-btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
-        .follow-btn:active, .unfollow-btn:active { transform: translateY(0); }
+
+        .follow-btn:hover,
+        .unfollow-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.04);
+        }
+
+        .follow-btn:active,
+        .unfollow-btn:active {
+            transform: translateY(0);
+        }
 
         .empty-message {
             grid-column: 1 / -1;
@@ -387,25 +454,66 @@
         }
 
         @media (max-width: 600px) {
-            header { padding: 14px 5%; }
-            .logo { font-size: 22px; }
-            .header-actions { gap: 7px; }
-            .header-btn { padding: 10px 12px; font-size: 13px; }
-            main { margin: 23px auto 45px; padding: 0 15px; }
-            .welcome { border-radius: 22px; }
-            .cards { gap: 13px; }
-            .card { min-height: auto; padding: 21px; }
-            .developers { margin-top: 20px; border-radius: 22px; }
+            header {
+                padding: 14px 5%;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .header-actions {
+                gap: 7px;
+            }
+
+            .header-btn {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            main {
+                margin: 23px auto 45px;
+                padding: 0 15px;
+            }
+
+            .welcome {
+                border-radius: 22px;
+            }
+
+            .cards {
+                gap: 13px;
+            }
+
+            .card {
+                min-height: auto;
+                padding: 21px;
+            }
+
+            .developers {
+                margin-top: 20px;
+                border-radius: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .developer-search-form {
+                flex-direction: column;
+            }
+
+            .developer-search-btn {
+                width: 100%;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
+            *,
+            *::before,
+            *::after {
                 scroll-behavior: auto !important;
                 transition-duration: .01ms !important;
                 animation-duration: .01ms !important;
             }
         }
-
     </style>
 </head>
 
@@ -419,6 +527,12 @@
         <a class="header-btn profile-link"
            href="<%= request.getContextPath() %>/profile">
             My Profile
+        </a>
+
+        <!-- NEW: Notifications navigation button -->
+        <a class="header-btn notification-link"
+           href="<%= request.getContextPath() %>/notifications">
+            🔔 Notifications
         </a>
 
         <a class="header-btn logout"
@@ -464,7 +578,8 @@
 
         </a>
 
-        <div class="card">
+        <a class="card feature-card"
+           href="<%= request.getContextPath() %>/projects">
 
             <h2>💻 Projects</h2>
 
@@ -472,11 +587,9 @@
                 Create projects, showcase your work, and discover new ideas.
             </p>
 
-            <a href="${pageContext.request.contextPath}/projects">
-                View Projects →
-            </a>
+            <span class="feature-hint">View Projects →</span>
 
-        </div>
+        </a>
 
         <div class="card">
 
@@ -488,6 +601,21 @@
 
         </div>
 
+        <!-- NEW: Notifications dashboard card -->
+        <a class="card feature-card"
+           href="<%= request.getContextPath() %>/notifications">
+
+            <h2>🔔 Notifications</h2>
+
+            <p>
+                Check updates about your project join requests,
+                including requests that have been accepted or rejected.
+            </p>
+
+            <span class="feature-hint">View Notifications →</span>
+
+        </a>
+
         <a class="card feature-card"
            href="<%= request.getContextPath() %>/followers">
 
@@ -498,6 +626,7 @@
             </p>
 
             <span class="feature-hint">View Followers →</span>
+
         </a>
 
         <a class="card feature-card"
@@ -510,8 +639,8 @@
             </p>
 
             <span class="feature-hint">View Following →</span>
-        </a>
 
+        </a>
 
     </section>
 
@@ -524,11 +653,11 @@
         <p class="developers-description">
             Connect with other developers and grow your network.
         </p>
+
         <form
                 action="<%= request.getContextPath() %>/search-developers"
                 method="get"
                 class="developer-search-form">
-
 
             <input
                     type="text"
@@ -542,7 +671,6 @@
             <button type="submit" class="developer-search-btn">
                 Search Developers
             </button>
-
 
         </form>
 
@@ -578,7 +706,6 @@
 
             <div class="developer-card">
 
-
                 <h3>
                     <a href="<%= request.getContextPath() %>/public-profile?id=<%= developer.getId() %>"
                        class="developer-name-link">
@@ -587,8 +714,6 @@
                 </h3>
 
                 <p>ProjectHub Developer</p>
-
-
 
                 <form
                         action="<%= request.getContextPath() %>/follow"
@@ -641,6 +766,6 @@
 
 </main>
 
-
 </body>
 </html>
+

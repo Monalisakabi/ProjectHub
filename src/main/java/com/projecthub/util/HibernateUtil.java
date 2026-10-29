@@ -1,10 +1,10 @@
 package com.projecthub.util;
 
-import com.projecthub.entity.Project;
-import com.projecthub.entity.User;
+import com.projecthub.entity.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import com.projecthub.entity.Follow;
+import com.projecthub.entity.Notification;
+import com.projecthub.entity.Skill;
 
 public class HibernateUtil {
 
@@ -22,6 +22,10 @@ public class HibernateUtil {
             configuration.addAnnotatedClass(User.class);
             configuration.addAnnotatedClass(Project.class);
             configuration.addAnnotatedClass(Follow.class);
+            configuration.addAnnotatedClass(JoinRequest.class);
+            configuration.addAnnotatedClass(ProjectMember.class);
+            configuration.addAnnotatedClass(Notification.class);
+            configuration.addAnnotatedClass(Skill.class);
 
             // Read database credentials from environment variables
             String username = System.getenv("PROJECTHUB_DB_USER");

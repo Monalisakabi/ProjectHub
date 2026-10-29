@@ -1,13 +1,14 @@
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    ```
     <title>Project Details | ProjectHub</title>
 
     <style>
@@ -31,6 +32,10 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
+        }
+
+        header h2 {
+            margin: 0;
         }
 
         header a {
@@ -98,8 +103,16 @@
             font-size: 14px;
         }
 
+        .button:hover {
+            opacity: 0.9;
+        }
+
         .delete-button {
             background: #dc2626;
+        }
+
+        .join-button {
+            background: #15803d;
         }
 
         .actions {
@@ -108,6 +121,10 @@
             gap: 12px;
             margin-top: 30px;
             align-items: center;
+        }
+
+        .actions form {
+            margin: 0;
         }
 
         .back-link {
@@ -132,6 +149,8 @@
             }
         }
     </style>
+    ```
+
 </head>
 
 <body>
@@ -139,14 +158,18 @@
 <header>
     <h2>ProjectHub</h2>
 
+    ```
     <nav>
-        <a href="${pageContext.request.contextPath}/dashboard">Dashboard</a>
+        <a href="${pageContext.request.contextPath}/dashboard.jsp">Dashboard</a>
         <a href="${pageContext.request.contextPath}/projects">Projects</a>
         <a href="${pageContext.request.contextPath}/logout">Logout</a>
     </nav>
+
+
 </header>
 
 <main>
+
 
     <a class="back-link"
        href="${pageContext.request.contextPath}/projects">
@@ -160,8 +183,8 @@
         </h1>
 
         <span class="status">
-            <c:out value="${project.status}"/>
-        </span>
+        <c:out value="${project.status}"/>
+    </span>
 
         <p class="label">Created by</p>
         <p class="value">
@@ -169,9 +192,7 @@
         </p>
 
         <p class="label">Project Description</p>
-        <div class="description">
-            <c:out value="${project.description}"/>
-        </div>
+        <div class="description"><c:out value="${project.description}"/></div>
 
         <c:if test="${not empty project.techStack}">
             <p class="label" style="margin-top: 28px;">Technology Stack</p>
@@ -199,13 +220,40 @@
             <c:out value="${project.createdAt}"/>
         </p>
 
+        <%-- Join button for logged-in users who do not own the project --%>
         <c:if test="${not empty sessionScope.userId
-                     and sessionScope.userId eq project.owner.id}">
+                 and sessionScope.userId ne project.owner.id}">
+
+            <form action="${pageContext.request.contextPath}/join-requests"
+                  method="post"
+                  style="margin-top: 25px;">
+
+                <input type="hidden" name="action" value="create">
+
+                <input type="hidden"
+                       name="projectId"
+                       value="<c:out value='${project.id}'/>">
+
+                <button type="submit" class="button join-button">
+                    Request to Join
+                </button>
+            </form>
+
+        </c:if>
+
+        <%-- Project management controls for the owner only --%>
+        <c:if test="${not empty sessionScope.userId
+                 and sessionScope.userId eq project.owner.id}">
 
             <div class="actions">
 
                 <a class="button"
-                   href="${pageContext.request.contextPath}/projects?action=edit&id=${project.id}">
+                   href="${pageContext.request.contextPath}/join-requests?action=list&amp;projectId=${project.id}">
+                    Manage Join Requests
+                </a>
+
+                <a class="button"
+                   href="${pageContext.request.contextPath}/projects?action=edit&amp;id=${project.id}">
                     Edit Project
                 </a>
 
@@ -214,7 +262,9 @@
                       onsubmit="return confirm('Are you sure you want to delete this project?');">
 
                     <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id"
+
+                    <input type="hidden"
+                           name="id"
                            value="<c:out value='${project.id}'/>">
 
                     <button type="submit" class="button delete-button">
@@ -228,8 +278,8 @@
 
     </div>
 
+
 </main>
 
 </body>
 </html>
-
