@@ -1,8 +1,21 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.projecthub.entity.User" %>
+<%@ page import="com.projecthub.entity.Skill" %>
+<%@ page import="java.util.List" %>
 
 <%
     User profileUser = (User) request.getAttribute("profileUser");
+    List<Skill> allSkills = (List<Skill>) request.getAttribute("allSkills");
+
+    if (allSkills == null) {
+        allSkills = java.util.Collections.emptyList();
+    }
+    java.util.Set<Skill> mySkills =
+            (java.util.Set<Skill>) request.getAttribute("mySkills");
+
+    if (mySkills == null) {
+        mySkills = java.util.Collections.emptySet();
+    }
 
     if (profileUser == null) {
         response.sendRedirect(request.getContextPath() + "/profile");
@@ -21,6 +34,7 @@
 %>
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -423,6 +437,55 @@
                 <button class="save-button" type="submit"><span aria-hidden="true">✓</span> Save changes</button>
             </div>
         </form>
+    </section>
+    <section class="form-card" aria-labelledby="skills-heading">
+        <div class="section-heading">
+            <h2 id="skills-heading">My Technical Skills</h2>
+            <p>Select a skill to add it to your developer profile.</p>
+        </div>
+        <div class="field">
+            <label>Skills on your profile</label>
+
+            <% if (mySkills.isEmpty()) { %>
+            <p>You haven't added any skills yet.</p>
+            <% } else { %>
+            <div>
+                <% for (Skill skill : mySkills) { %>
+                <span style="display:inline-block; margin:4px; padding:8px 12px;
+                                     background:#eee8ff; border-radius:16px;">
+                            <%= escapeHtml(skill.getName()) %>
+                        </span>
+                <% } %>
+            </div>
+            <% } %>
+        </div>
+
+        <% if (allSkills.isEmpty()) { %>
+        <p>No skills are available yet. Please try again after skills
+            have been added to the database.</p>
+        <% } else { %>
+        <form action="<%= contextPath %>/profile" method="post">
+            <input type="hidden" name="action" value="addSkill">
+
+            <div class="field">
+                <label for="skillId">Choose a skill</label>
+
+                <select id="skillId" name="skillId" required>
+                    <option value="">-- Select a skill --</option>
+
+                    <% for (Skill skill : allSkills) { %>
+                    <option value="<%= skill.getId() %>">
+                        <%= escapeHtml(skill.getName()) %>
+                    </option>
+                    <% } %>
+                </select>
+            </div>
+
+            <button class="save-button" type="submit">
+                + Add Skill
+            </button>
+        </form>
+        <% } %>
     </section>
 </main>
 

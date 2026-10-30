@@ -8,6 +8,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.projecthub.service.SkillService;
+import com.projecthub.entity.Skill;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -15,6 +18,7 @@ import java.io.IOException;
 public class ProfileServlet extends HttpServlet {
 
     private final UserDAO userDAO = new UserDAO();
+    private final SkillService skillService = new SkillService();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -39,6 +43,9 @@ public class ProfileServlet extends HttpServlet {
         }
 
         request.setAttribute("profileUser", user);
+        List<Skill> allSkills = skillService.getAllSkills();
+        request.setAttribute("allSkills", allSkills);
+        request.setAttribute("mySkills", user.getSkills());
         request.getRequestDispatcher("/profile.jsp").forward(request, response);
     }
 
@@ -57,6 +64,45 @@ public class ProfileServlet extends HttpServlet {
         }
 
         Long userId = ((Number) session.getAttribute("userId")).longValue();
+        String action = request.getParameter("action");
+
+        if ("addSkill".equals(action)) {
+            String skillIdValue = request.getParameter("skillId");
+
+            try {
+                Long skillId = Long.parseLong(skillIdValue);
+
+                if (skillId <= 0) {
+                    response.sendError(
+                            HttpServletResponse.SC_BAD_REQUEST,
+                            "Invalid skill selected."
+                    );
+                    return;
+                }
+
+                boolean added = userDAO.addSkillToUser(userId, skillId);
+
+                if (!added) {
+                    response.sendError(
+                            HttpServletResponse.SC_BAD_REQUEST,
+                            "Invalid skill or user."
+                    );
+                    return;
+                }
+
+                response.sendRedirect(
+                        request.getContextPath() + "/profile?skillAdded=true"
+                );
+                return;
+
+            } catch (NumberFormatException e) {
+                response.sendError(
+                        HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid skill selected."
+                );
+                return;
+            }
+        }
 
         String name = request.getParameter("name");
         String bio = request.getParameter("bio");

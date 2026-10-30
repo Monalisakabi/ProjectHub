@@ -5,6 +5,8 @@ import com.projecthub.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import java.util.List;
+import com.projecthub.entity.Skill;
+import org.hibernate.Hibernate;
 
 import java.util.Optional;
 
@@ -64,7 +66,13 @@ public class UserDAO {
         try (Session session =
                      HibernateUtil.getSessionFactory().openSession()) {
 
-            return session.get(User.class, id);
+            User user = session.get(User.class, id);
+
+            if (user != null) {
+                Hibernate.initialize(user.getSkills());
+            }
+
+            return user;
 
         } catch (Exception e) {
             throw new RuntimeException("Unable to find user by ID.", e);
@@ -114,6 +122,35 @@ public class UserDAO {
             throw new RuntimeException(
                     "Unable to search developers.", e
             );
+        }
+    }
+    public boolean addSkillToUser(Long userId, Long skillId) {
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            User user = session.find(User.class, userId);
+            Skill skill = session.find(Skill.class, skillId);
+
+            if (user == null || skill == null) {
+                transaction.rollback();
+                return false;
+            }
+
+            user.getSkills().add(skill);
+
+            session.merge(user);
+            transaction.commit();
+
+            return true;
+
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+
+            throw new RuntimeException("Failed to add skill to user.", e);
         }
     }
 
