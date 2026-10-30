@@ -4,10 +4,14 @@ import com.projecthub.dao.ProjectDAO;
 import com.projecthub.entity.Project;
 import com.projecthub.entity.User;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import java.util.List;
 import java.util.Optional;
 
 public class ProjectService {
+
 
     private final ProjectDAO projectDAO = new ProjectDAO();
 
@@ -16,43 +20,38 @@ public class ProjectService {
             String title,
             String description,
             String techStack,
+            String projectType,
+            Integer requiredMembers,
+            String status,
             String githubUrl,
-            String demoUrl) {
+            String demoUrl,
+            Set<Long> requiredSkillIds) {
 
         if (owner == null || owner.getId() == null) {
             throw new IllegalArgumentException("Please log in to create a project.");
         }
 
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Project title is required.");
-        }
-
-        if (title.trim().length() > 150) {
-            throw new IllegalArgumentException("Project title must not exceed 150 characters.");
-        }
-
-        if (description == null || description.trim().isEmpty()) {
-            throw new IllegalArgumentException("Project description is required.");
-        }
-
-        if (description.trim().length() > 2000) {
-            throw new IllegalArgumentException("Description must not exceed 2000 characters.");
-        }
+        validateProjectDetails(title, description, projectType, requiredMembers, status);
 
         Project project = new Project();
         project.setTitle(title.trim());
         project.setDescription(description.trim());
         project.setTechStack(cleanOptionalField(techStack));
+        project.setProjectType(projectType.trim());
+        project.setRequiredMembers(requiredMembers);
+        project.setStatus(status.trim());
         project.setGithubUrl(cleanOptionalField(githubUrl));
         project.setDemoUrl(cleanOptionalField(demoUrl));
-        project.setStatus("PUBLISHED");
         project.setOwner(owner);
 
-        projectDAO.save(project);
+        Set<Long> skillIds = requiredSkillIds == null
+                ? new HashSet<>()
+                : new HashSet<>(requiredSkillIds);
+
+        projectDAO.saveWithSkills(project, skillIds);
 
         return project;
     }
-
     public List<Project> getAllProjects() {
         return projectDAO.findAll();
     }
@@ -86,10 +85,38 @@ public class ProjectService {
             String title,
             String description,
             String techStack,
+            String projectType,
+            Integer requiredMembers,
+            String status,
             String githubUrl,
-            String demoUrl) {
+            String demoUrl,
+            Set<Long> requiredSkillIds) {
 
         Project project = getOwnedProject(projectId, currentUserId);
+
+        validateProjectDetails(title, description, projectType, requiredMembers, status);
+
+        project.setTitle(title.trim());
+        project.setDescription(description.trim());
+        project.setTechStack(cleanOptionalField(techStack));
+        project.setProjectType(projectType.trim());
+        project.setRequiredMembers(requiredMembers);
+        project.setStatus(status.trim());
+        project.setGithubUrl(cleanOptionalField(githubUrl));
+        project.setDemoUrl(cleanOptionalField(demoUrl));
+
+        Set<Long> skillIds = requiredSkillIds == null
+                ? new HashSet<>()
+                : new HashSet<>(requiredSkillIds);
+
+        projectDAO.updateWithSkills(project, skillIds);
+    }
+    private void validateProjectDetails(
+            String title,
+            String description,
+            String projectType,
+            Integer requiredMembers,
+            String status) {
 
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Project title is required.");
@@ -107,13 +134,17 @@ public class ProjectService {
             throw new IllegalArgumentException("Description must not exceed 2000 characters.");
         }
 
-        project.setTitle(title.trim());
-        project.setDescription(description.trim());
-        project.setTechStack(cleanOptionalField(techStack));
-        project.setGithubUrl(cleanOptionalField(githubUrl));
-        project.setDemoUrl(cleanOptionalField(demoUrl));
+        if (projectType == null || projectType.trim().isEmpty()) {
+            throw new IllegalArgumentException("Project type is required.");
+        }
 
-        projectDAO.update(project);
+        if (requiredMembers == null || requiredMembers < 1 || requiredMembers > 100) {
+            throw new IllegalArgumentException("Required team members must be between 1 and 100.");
+        }
+
+        if (status == null || status.trim().isEmpty()) {
+            throw new IllegalArgumentException("Project status is required.");
+        }
     }
 
     public void deleteProject(Long projectId, Long currentUserId) {

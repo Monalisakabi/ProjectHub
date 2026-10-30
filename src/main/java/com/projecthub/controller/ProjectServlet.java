@@ -11,6 +11,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.projecthub.service.SkillService;
+import com.projecthub.entity.Skill;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.Session;
 
@@ -22,6 +27,7 @@ import java.util.Optional;
 public class ProjectServlet extends HttpServlet {
 
     private final ProjectService projectService = new ProjectService();
+    private final SkillService skillService = new SkillService();
 
     @Override
     protected void doGet(
@@ -38,10 +44,13 @@ public class ProjectServlet extends HttpServlet {
                     return;
                 }
 
+                loadAvailableSkills(request);
+
                 request.getRequestDispatcher("/create-project.jsp")
                         .forward(request, response);
+            }
 
-            } else if ("view".equals(action)) {
+             else if ("view".equals(action)) {
                 viewProject(request, response);
 
             } else if ("edit".equals(action)) {
@@ -94,9 +103,11 @@ public class ProjectServlet extends HttpServlet {
             if ("update".equals(action)) {
                 editProject(request, response);
             } else {
-                request.getRequestDispatcher("/create-project.jsp")
-                        .forward(request, response);
-            }
+            loadAvailableSkills(request);
+
+            request.getRequestDispatcher("/create-project.jsp")
+                    .forward(request, response);
+        }
 
         } catch (Exception e) {
             throw new ServletException("Unable to process project request.", e);
@@ -146,6 +157,7 @@ public class ProjectServlet extends HttpServlet {
     }
 
     private void editProject(
+
             HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
@@ -166,6 +178,8 @@ public class ProjectServlet extends HttpServlet {
         }
 
         request.setAttribute("project", project);
+
+        loadAvailableSkills(request);
         request.getRequestDispatcher("/create-project.jsp")
                 .forward(request, response);
     }
@@ -189,8 +203,12 @@ public class ProjectServlet extends HttpServlet {
                 request.getParameter("title"),
                 request.getParameter("description"),
                 request.getParameter("techStack"),
+                request.getParameter("projectType"),
+                Integer.parseInt(request.getParameter("requiredMembers")),
+                request.getParameter("status"),
                 request.getParameter("githubUrl"),
-                request.getParameter("demoUrl")
+                request.getParameter("demoUrl"),
+                parseSkillIds(request.getParameterValues("requiredSkillIds"))
         );
 
         response.sendRedirect(request.getContextPath() + "/projects");
@@ -210,8 +228,12 @@ public class ProjectServlet extends HttpServlet {
                 request.getParameter("title"),
                 request.getParameter("description"),
                 request.getParameter("techStack"),
+                request.getParameter("projectType"),
+                Integer.parseInt(request.getParameter("requiredMembers")),
+                request.getParameter("status"),
                 request.getParameter("githubUrl"),
-                request.getParameter("demoUrl")
+                request.getParameter("demoUrl"),
+                parseSkillIds(request.getParameterValues("requiredSkillIds"))
         );
 
         response.sendRedirect(
@@ -230,6 +252,20 @@ public class ProjectServlet extends HttpServlet {
         projectService.deleteProject(projectId, currentUserId);
 
         response.sendRedirect(request.getContextPath() + "/projects");
+    }
+    private void loadAvailableSkills(HttpServletRequest request) {
+        request.setAttribute("availableSkills", skillService.getAllSkills());
+    }
+    private Set<Long> parseSkillIds(String[] skillIds) {
+        Set<Long> result = new HashSet<>();
+
+        if (skillIds != null) {
+            for (String id : skillIds) {
+                result.add(Long.parseLong(id));
+            }
+        }
+
+        return result;
     }
 
     private User findUserById(Long userId) {

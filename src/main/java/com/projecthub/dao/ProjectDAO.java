@@ -4,6 +4,8 @@ import com.projecthub.entity.Project;
 import com.projecthub.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import com.projecthub.entity.Skill;
+import java.util.Set;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,39 @@ public class ProjectDAO {
             throw new RuntimeException("Unable to save project.", e);
         }
     }
+    public void saveWithSkills(Project project, Set<Long> skillIds) {
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            if (skillIds != null) {
+                for (Long skillId : skillIds) {
+                    Skill skill = session.get(Skill.class, skillId);
+
+                    if (skill == null) {
+                        throw new IllegalArgumentException("Invalid skill selected.");
+                    }
+
+                    project.getRequiredSkills().add(skill);
+                }
+            }
+
+            session.persist(project);
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+
+            if (e instanceof IllegalArgumentException) {
+                throw (IllegalArgumentException) e;
+            }
+
+            throw new RuntimeException("Unable to save project with skills.", e);
+        }
+    }
 
     public List<Project> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -38,8 +73,12 @@ public class ProjectDAO {
 
     public Optional<Project> findById(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
             Project project = session.createQuery(
-                            "FROM Project p JOIN FETCH p.owner WHERE p.id = :id",
+                            "FROM Project p " +
+                                    "JOIN FETCH p.owner " +
+                                    "LEFT JOIN FETCH p.requiredSkills " +
+                                    "WHERE p.id = :id",
                             Project.class
                     )
                     .setParameter("id", id)
@@ -90,6 +129,55 @@ public class ProjectDAO {
             }
 
             throw new RuntimeException("Unable to update project.", e);
+        }
+    }
+    public void updateWithSkills(Project project, Set<Long> skillIds) {
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            Project existingProject = session.get(Project.class, project.getId());
+
+            if (existingProject == null) {
+                throw new IllegalArgumentException("Project not found.");
+            }
+
+            existingProject.setTitle(project.getTitle());
+            existingProject.setDescription(project.getDescription());
+            existingProject.setTechStack(project.getTechStack());
+            existingProject.setProjectType(project.getProjectType());
+            existingProject.setRequiredMembers(project.getRequiredMembers());
+            existingProject.setGithubUrl(project.getGithubUrl());
+            existingProject.setDemoUrl(project.getDemoUrl());
+            existingProject.setStatus(project.getStatus());
+
+            existingProject.getRequiredSkills().clear();
+
+            if (skillIds != null) {
+                for (Long skillId : skillIds) {
+                    Skill skill = session.get(Skill.class, skillId);
+
+                    if (skill == null) {
+                        throw new IllegalArgumentException("Invalid skill selected.");
+                    }
+
+                    existingProject.getRequiredSkills().add(skill);
+                }
+            }
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+
+            if (e instanceof IllegalArgumentException) {
+                throw (IllegalArgumentException) e;
+            }
+
+            throw new RuntimeException("Unable to update project with skills.", e);
         }
     }
 

@@ -1,6 +1,6 @@
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,7 +47,7 @@
             margin-bottom: 7px;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 12px;
             border: 1px solid #cbd5e1;
@@ -61,7 +61,7 @@
             resize: vertical;
         }
 
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: 2px solid #93c5fd;
             border-color: #2563eb;
         }
@@ -139,7 +139,7 @@
         <c:choose>
             <c:when test="${not empty project}">
                 <input type="hidden" name="action" value="update">
-                <input type="hidden" name="id" value="<c:out value='${project.id}'/>">
+                <input type="hidden" name="id" value="${project.id}">
             </c:when>
             <c:otherwise>
                 <input type="hidden" name="action" value="create">
@@ -172,6 +172,78 @@
                 maxlength="500"
                 value="<c:out value='${project.techStack}'/>"
                 placeholder="e.g. Java, JSP, Hibernate, MySQL">
+
+        <label for="projectType">Project Type *</label>
+        <select id="projectType" name="projectType" required>
+            <option value="">Select Project Type</option>
+
+            <option value="ACADEMIC"
+            ${project.projectType == 'ACADEMIC' ? 'selected' : ''}>
+                Academic
+            </option>
+
+            <option value="PERSONAL"
+            ${project.projectType == 'PERSONAL' ? 'selected' : ''}>
+                Personal
+            </option>
+
+            <option value="OPEN_SOURCE"
+            ${project.projectType == 'OPEN_SOURCE' ? 'selected' : ''}>
+                Open Source
+            </option>
+
+            <option value="RESEARCH"
+            ${project.projectType == 'RESEARCH' ? 'selected' : ''}>
+                Research
+            </option>
+        </select>
+
+        <label for="status">Project Status *</label>
+        <select id="status" name="status" required>
+            <option value="PUBLISHED"
+            ${empty project.status || project.status == 'PUBLISHED' ? 'selected' : ''}>
+                Published
+            </option>
+
+            <option value="LOOKING_FOR_MEMBERS"
+            ${project.status == 'LOOKING_FOR_MEMBERS' ? 'selected' : ''}>
+                Looking for Team Members
+            </option>
+        </select>
+
+        <label for="requiredMembers">Required Team Members *</label>
+        <input
+                type="number"
+                id="requiredMembers"
+                name="requiredMembers"
+                min="1"
+                max="100"
+                value="${project.requiredMembers}"
+                placeholder="e.g. 3"
+                required>
+
+        <label for="requiredSkills">Required Skills</label>
+
+        <select
+                id="requiredSkills"
+                name="requiredSkillIds"
+                multiple
+                size="6">
+
+            <c:forEach var="skill" items="${availableSkills}">
+                <option value="${skill.id}"
+                        <c:forEach var="selectedSkill" items="${project.requiredSkills}">
+                            <c:if test="${selectedSkill.id == skill.id}">selected</c:if>
+                        </c:forEach>>
+                    <c:out value="${skill.name}"/>
+                </option>
+            </c:forEach>
+
+        </select>
+
+        <span class="hint">
+            Hold Ctrl (Windows) to select multiple skills.
+        </span>
 
         <label for="githubUrl">GitHub Repository URL</label>
         <input
@@ -208,4 +280,3 @@
 
 </body>
 </html>
-

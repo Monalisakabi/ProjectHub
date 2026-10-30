@@ -108,6 +108,19 @@ public class Project {
     public void setStatus(String status) {
         this.status = status;
     }
+    @Column(name = "project_type", length = 50)
+    private String projectType;
+
+    @Column(name = "required_members")
+    private Integer requiredMembers;
+
+    @ManyToMany
+    @JoinTable(
+            name = "project_skills",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    private java.util.Set<Skill> requiredSkills = new java.util.HashSet<>();
 
     public User getOwner() {
         return owner;
@@ -123,6 +136,29 @@ public class Project {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+    public String getProjectType() {
+        return projectType;
+    }
+
+    public void setProjectType(String projectType) {
+        this.projectType = projectType;
+    }
+
+    public Integer getRequiredMembers() {
+        return requiredMembers;
+    }
+
+    public void setRequiredMembers(Integer requiredMembers) {
+        this.requiredMembers = requiredMembers;
+    }
+
+    public java.util.Set<Skill> getRequiredSkills() {
+        return requiredSkills;
+    }
+
+    public void setRequiredSkills(java.util.Set<Skill> requiredSkills) {
+        this.requiredSkills = requiredSkills;
     }
 }
 

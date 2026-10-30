@@ -3,6 +3,7 @@ package com.projecthub.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+
 @Entity
 @Table(
         name = "follows",

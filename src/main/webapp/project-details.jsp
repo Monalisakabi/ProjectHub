@@ -1,14 +1,13 @@
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    ```
     <title>Project Details | ProjectHub</title>
 
     <style>
@@ -134,6 +133,22 @@
             text-decoration: none;
         }
 
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #1e40af;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
         @media (max-width: 600px) {
             header {
                 padding: 18px 5%;
@@ -149,8 +164,6 @@
             }
         }
     </style>
-    ```
-
 </head>
 
 <body>
@@ -158,18 +171,14 @@
 <header>
     <h2>ProjectHub</h2>
 
-    ```
     <nav>
         <a href="${pageContext.request.contextPath}/dashboard.jsp">Dashboard</a>
         <a href="${pageContext.request.contextPath}/projects">Projects</a>
         <a href="${pageContext.request.contextPath}/logout">Logout</a>
     </nav>
-
-
 </header>
 
 <main>
-
 
     <a class="back-link"
        href="${pageContext.request.contextPath}/projects">
@@ -183,22 +192,48 @@
         </h1>
 
         <span class="status">
-        <c:out value="${project.status}"/>
-    </span>
+            <c:out value="${project.status}"/>
+        </span>
 
-        <p class="label">Created by</p>
+        <p class="label" style="margin-top: 25px;">Created by</p>
         <p class="value">
             <c:out value="${project.owner.name}"/>
         </p>
 
         <p class="label">Project Description</p>
-        <div class="description"><c:out value="${project.description}"/></div>
+        <div class="description">
+            <c:out value="${project.description}"/>
+        </div>
+
+        <c:if test="${not empty project.projectType}">
+            <p class="label" style="margin-top: 28px;">Project Type</p>
+            <p class="value">
+                <c:out value="${project.projectType}"/>
+            </p>
+        </c:if>
 
         <c:if test="${not empty project.techStack}">
-            <p class="label" style="margin-top: 28px;">Technology Stack</p>
+            <p class="label">Technology Stack</p>
             <p class="value">
                 <c:out value="${project.techStack}"/>
             </p>
+        </c:if>
+
+        <p class="label">Required Team Members</p>
+        <p class="value">
+            <c:out value="${project.requiredMembers}"/>
+        </p>
+
+        <c:if test="${not empty project.requiredSkills}">
+            <p class="label">Required Skills</p>
+
+            <div class="skills-list">
+                <c:forEach var="skill" items="${project.requiredSkills}">
+                    <span class="skill-tag">
+                        <c:out value="${skill.name}"/>
+                    </span>
+                </c:forEach>
+            </div>
         </c:if>
 
         <c:if test="${not empty project.githubUrl}">
@@ -246,6 +281,10 @@
                  and sessionScope.userId eq project.owner.id}">
 
             <div class="actions">
+                <a class="button"
+                   href="${pageContext.request.contextPath}/team?projectId=${project.id}">
+                    Team Dashboard
+                </a>
 
                 <a class="button"
                    href="${pageContext.request.contextPath}/join-requests?action=list&amp;projectId=${project.id}">
@@ -278,8 +317,8 @@
 
     </div>
 
-
 </main>
 
 </body>
 </html>
+

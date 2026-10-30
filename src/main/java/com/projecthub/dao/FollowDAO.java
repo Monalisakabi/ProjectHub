@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.HashSet;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import com.projecthub.entity.Notification;
 
 import java.util.Optional;
 
@@ -54,6 +55,14 @@ public class FollowDAO {
 
             Follow follow = new Follow(follower, followed);
             session.persist(follow);
+
+// Create notification for the followed user.
+            Notification notification = new Notification(
+                    followed,
+                    follower.getName() + " started following you."
+            );
+
+            session.persist(notification);
 
             transaction.commit();
             return true;
