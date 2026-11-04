@@ -184,9 +184,27 @@ public class ProjectDAO {
     public void delete(Long id) {
         Transaction transaction = null;
 
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
             transaction = session.beginTransaction();
 
+            // Delete related join requests
+            session.createNativeQuery(
+                    "DELETE FROM join_requests WHERE project_id = :projectId"
+            ).setParameter("projectId", id).executeUpdate();
+
+            // Delete related project memberships
+            session.createNativeQuery(
+                    "DELETE FROM project_members WHERE project_id = :projectId"
+            ).setParameter("projectId", id).executeUpdate();
+
+            // Delete related project skills
+            session.createNativeQuery(
+                    "DELETE FROM project_skills WHERE project_id = :projectId"
+            ).setParameter("projectId", id).executeUpdate();
+
+            // Delete the project
             Project project = session.get(Project.class, id);
 
             if (project != null) {
@@ -196,6 +214,7 @@ public class ProjectDAO {
             transaction.commit();
 
         } catch (Exception e) {
+
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }

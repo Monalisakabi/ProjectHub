@@ -191,6 +191,16 @@
             <c:out value="${project.title}"/>
         </h1>
 
+        <div style="background: #fff3cd; padding: 15px; margin: 15px 0;">
+            <p>Logged-in User ID:
+                <c:out value="${sessionScope.userId}"/>
+            </p>
+
+            <p>Project Owner ID:
+                <c:out value="${project.owner.id}"/>
+            </p>
+        </div>
+
         <span class="status">
             <c:out value="${project.status}"/>
         </span>
