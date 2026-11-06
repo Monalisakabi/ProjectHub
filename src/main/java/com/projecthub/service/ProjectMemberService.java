@@ -12,4 +12,10 @@ public class ProjectMemberService {
     public List<ProjectMember> getProjectMembers(Long projectId) {
         return projectMemberDAO.findByProjectId(projectId);
     }
+    public Long getMemberCount(Long projectId) {
+        return projectMemberDAO.countByProjectId(projectId);
+    }
+    public boolean isMember(Long projectId, Long userId) {
+        return projectMemberDAO.isMember(projectId, userId);
+    }
 }

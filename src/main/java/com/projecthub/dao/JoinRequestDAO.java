@@ -103,6 +103,46 @@ public class JoinRequestDAO {
         }
     }
 
+    public void cancelPendingRequest(Long projectId, Long userId) {
+
+        Transaction transaction = null;
+
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+
+            JoinRequest request = session.createQuery(
+                            "FROM JoinRequest jr " +
+                                    "WHERE jr.project.id = :projectId " +
+                                    "AND jr.user.id = :userId " +
+                                    "AND jr.status = 'PENDING'",
+                            JoinRequest.class)
+                    .setParameter("projectId", projectId)
+                    .setParameter("userId", userId)
+                    .uniqueResult();
+
+            if (request == null) {
+                throw new IllegalArgumentException(
+                        "No pending request found.");
+            }
+
+            request.setStatus("CANCELLED");
+
+            transaction.commit();
+
+        } catch (Exception e) {
+
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+
+            throw new RuntimeException(
+                    "Unable to cancel join request.", e);
+        }
+    }
+
+
     public JoinRequest findById(Long requestId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(

@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import com.projecthub.service.SkillService;
 import com.projecthub.entity.Skill;
+import com.projecthub.service.JoinRequestService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,12 +23,17 @@ import org.hibernate.Session;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import com.projecthub.service.ProjectMemberService;
 
 @WebServlet("/projects")
 public class ProjectServlet extends HttpServlet {
 
     private final ProjectService projectService = new ProjectService();
     private final SkillService skillService = new SkillService();
+    private final JoinRequestService joinRequestService =
+            new JoinRequestService();
+    private final ProjectMemberService projectMemberService =
+            new ProjectMemberService();
 
     @Override
     protected void doGet(
@@ -143,14 +149,57 @@ public class ProjectServlet extends HttpServlet {
 
         Long projectId = parseProjectId(request);
 
-        Optional<Project> result = projectService.getProjectById(projectId);
+        Optional<Project> result =
+                projectService.getProjectById(projectId);
 
         if (result.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Project not found.");
+            response.sendError(
+                    HttpServletResponse.SC_NOT_FOUND,
+                    "Project not found.");
             return;
         }
 
-        request.setAttribute("project", result.get());
+        Project project = result.get();
+
+        request.setAttribute("project", project);
+        Long memberCount =
+                projectMemberService.getMemberCount(projectId);
+
+        int remainingMembers =
+                project.getRequiredMembers() - memberCount.intValue();
+
+        if (remainingMembers < 0) {
+            remainingMembers = 0;
+        }
+
+        request.setAttribute(
+                "remainingMembers",
+                remainingMembers);
+
+        // Check whether the logged-in user has a pending join request
+        if (isLoggedIn(request)) {
+
+            Long currentUserId = getCurrentUserId(request);
+
+            boolean hasPendingRequest =
+                    joinRequestService.hasPendingRequest(
+                            projectId,
+                            currentUserId);
+
+            request.setAttribute(
+                    "hasPendingJoinRequest",
+                    hasPendingRequest);
+        }
+        if (isLoggedIn(request)) {
+            Long currentUserId = getCurrentUserId(request);
+
+            boolean isMember =
+                    projectMemberService.isMember(projectId, currentUserId);
+
+            request.setAttribute(
+                    "isProjectMember",
+                    isMember);
+        }
 
         request.getRequestDispatcher("/project-details.jsp")
                 .forward(request, response);

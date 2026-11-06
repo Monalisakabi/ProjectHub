@@ -180,7 +180,14 @@ public class JoinRequestServlet extends HttpServlet {
         joinRequest.setProject(project);
         joinRequest.setUser(user);
 
-        joinRequestService.createRequest(joinRequest);
+        if (joinRequestService.hasPendingRequest(projectId, currentUserId)) {
+
+            joinRequestService.cancelRequest(projectId, currentUserId);
+
+        } else {
+
+            joinRequestService.createRequest(joinRequest);
+        }
 
         response.sendRedirect(
                 request.getContextPath() + "/projects?action=view&id="

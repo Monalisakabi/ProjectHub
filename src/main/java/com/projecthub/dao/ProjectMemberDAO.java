@@ -24,6 +24,35 @@ public class ProjectMemberDAO {
                     .getResultList();
         }
     }
+    public Long countByProjectId(Long projectId) {
+
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            return session.createQuery(
+                            "SELECT COUNT(pm) FROM ProjectMember pm " +
+                                    "WHERE pm.project.id = :projectId",
+                            Long.class)
+                    .setParameter("projectId", projectId)
+                    .getSingleResult();
+        }
+    }
+    public boolean isMember(Long projectId, Long userId) {
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            Long count = session.createQuery(
+                            "SELECT COUNT(pm) FROM ProjectMember pm " +
+                                    "WHERE pm.project.id = :projectId " +
+                                    "AND pm.user.id = :userId",
+                            Long.class)
+                    .setParameter("projectId", projectId)
+                    .setParameter("userId", userId)
+                    .getSingleResult();
+
+            return count > 0;
+        }
+    }
 
     public List<ProjectMember> findByUserId(Long userId) {
 

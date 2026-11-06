@@ -19,6 +19,7 @@ public class JoinRequestService {
                     "A valid project and user are required.");
         }
 
+
         Long projectId = joinRequest.getProject().getId();
         Long userId = joinRequest.getUser().getId();
 
@@ -35,6 +36,25 @@ public class JoinRequestService {
 
         joinRequest.setStatus("PENDING");
         joinRequestDAO.save(joinRequest);
+    }
+    public boolean hasPendingRequest(Long projectId, Long userId) {
+
+        if (projectId == null || userId == null) {
+            throw new IllegalArgumentException(
+                    "Project ID and user ID are required.");
+        }
+
+        return joinRequestDAO.hasPendingRequest(projectId, userId);
+    }
+
+    public void cancelRequest(Long projectId, Long userId) {
+
+        if (projectId == null || userId == null) {
+            throw new IllegalArgumentException(
+                    "Project ID and user ID are required.");
+        }
+
+        joinRequestDAO.cancelPendingRequest(projectId, userId);
     }
 
     public List<JoinRequest> getRequestsForProject(Long projectId) {

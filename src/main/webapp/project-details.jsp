@@ -229,9 +229,9 @@
             </p>
         </c:if>
 
-        <p class="label">Required Team Members</p>
+        <p class="label">Members Required</p>
         <p class="value">
-            <c:out value="${project.requiredMembers}"/>
+            <c:out value="${remainingMembers}"/>
         </p>
 
         <c:if test="${not empty project.requiredSkills}">
@@ -279,8 +279,24 @@
                        name="projectId"
                        value="<c:out value='${project.id}'/>">
 
-                <button type="submit" class="button join-button">
-                    Request to Join
+                <button type="submit" class="button join-button"
+                        <c:if test="${isProjectMember}">disabled</c:if>>
+
+                    <c:choose>
+
+                        <c:when test="${isProjectMember}">
+                            Joined
+                        </c:when>
+
+                        <c:when test="${hasPendingJoinRequest}">
+                            Requested
+                        </c:when>
+
+                        <c:otherwise>
+                            Request to Join
+                        </c:otherwise>
+
+                    </c:choose>
                 </button>
             </form>
 
