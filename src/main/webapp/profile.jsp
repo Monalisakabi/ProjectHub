@@ -333,6 +333,62 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { transition-duration: .01ms !important; }
         }
+
+        .social-stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 23px;
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 20px;
+            border: 1px solid #e9e6f7;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, .96);
+            color: var(--ink);
+            text-decoration: none;
+            box-shadow: var(--shadow);
+            transition: transform .2s ease,
+            box-shadow .2s ease,
+            border-color .2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: #cfc2f7;
+            box-shadow: 0 20px 40px rgba(49, 35, 110, .14);
+        }
+
+        .stat-number {
+            color: #5b21b6;
+            font-size: 30px;
+            font-weight: 850;
+            line-height: 1;
+        }
+
+        .stat-label {
+            margin-top: 8px;
+            color: #342269;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .stat-hint {
+            margin-top: 5px;
+            color: #85819d;
+            font-size: 12px;
+        }
+
+        @media (max-width: 650px) {
+            .social-stats {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -353,6 +409,44 @@
             <h1 id="profile-title">My Profile</h1>
             <p>Make your profile yours. Share your story, highlight your links, and help other developers get to know you.</p>
         </div>
+    </section>
+    <section class="social-stats" aria-label="Followers and following">
+
+        <a class="stat-card"
+           href="<%= contextPath %>/followers">
+
+        <span class="stat-number">
+            <%= request.getAttribute("followerCount") %>
+        </span>
+
+            <span class="stat-label">
+            Followers
+        </span>
+
+            <span class="stat-hint">
+            See who follows you
+        </span>
+
+        </a>
+
+
+        <a class="stat-card"
+           href="<%= contextPath %>/following">
+
+        <span class="stat-number">
+            <%= request.getAttribute("followingCount") %>
+        </span>
+
+            <span class="stat-label">
+            Following
+        </span>
+
+            <span class="stat-hint">
+            See who you follow
+        </span>
+
+        </a>
+
     </section>
 
     <section class="form-card" aria-labelledby="edit-profile-heading">

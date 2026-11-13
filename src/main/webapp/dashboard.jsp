@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
@@ -34,6 +33,24 @@
             .replace(">", "&gt;")
             .replace("\"", "&quot;")
             .replace("'", "&#39;");
+
+    /*
+     * Notification unread count.
+     * NotificationServlet already provides unreadCount when opening
+     * /notifications, but dashboard needs to load it separately.
+     */
+    long unreadCount = 0;
+
+    try {
+        com.projecthub.service.NotificationService notificationService =
+                new com.projecthub.service.NotificationService();
+
+        unreadCount =
+                notificationService.getUnreadCount(currentUserId);
+
+    } catch (Exception e) {
+        unreadCount = 0;
+    }
 %>
 
 <!DOCTYPE html>
@@ -134,14 +151,40 @@
             background: #e5d9ff;
         }
 
-        /* NEW: Notifications navigation button */
-        .notification-link {
+        /* Notification icon in header */
+        .notification-icon {
+            position: relative;
+            width: 48px;
+            height: 44px;
+            padding: 0;
             background: #dbeafe;
             color: #1d4ed8;
+            font-size: 20px;
+            border-radius: 12px;
         }
 
-        .notification-link:hover {
+        .notification-icon:hover {
             background: #bfdbfe;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, .25);
         }
 
         .logout {
@@ -471,6 +514,12 @@
                 font-size: 13px;
             }
 
+            .notification-icon {
+                width: 44px;
+                height: 40px;
+                font-size: 18px;
+            }
+
             main {
                 margin: 23px auto 45px;
                 padding: 0 15px;
@@ -520,6 +569,7 @@
 <body>
 
 <header>
+
     <div class="logo">ProjectHub</div>
 
     <div class="header-actions">
@@ -529,10 +579,22 @@
             My Profile
         </a>
 
-        <!-- NEW: Notifications navigation button -->
-        <a class="header-btn notification-link"
-           href="<%= request.getContextPath() %>/notifications">
-            🔔 Notifications
+        <!-- Notification icon only -->
+        <a class="header-btn notification-icon"
+           href="<%= request.getContextPath() %>/notifications"
+           title="Notifications"
+           aria-label="Notifications">
+
+            🔔
+
+            <% if (unreadCount > 0) { %>
+
+            <span class="notification-badge">
+                    <%= unreadCount > 99 ? "99+" : "+" + unreadCount %>
+                </span>
+
+            <% } %>
+
         </a>
 
         <a class="header-btn logout"
@@ -541,6 +603,7 @@
         </a>
 
     </div>
+
 </header>
 
 <main>
@@ -601,7 +664,8 @@
 
         </div>
 
-        <!-- NEW: Notifications dashboard card -->
+        <!-- Notifications dashboard card remains unchanged -->
+
         <a class="card feature-card"
            href="<%= request.getContextPath() %>/notifications">
 
@@ -768,4 +832,3 @@
 
 </body>
 </html>
-

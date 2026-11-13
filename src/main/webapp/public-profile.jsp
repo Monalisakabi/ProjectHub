@@ -36,8 +36,15 @@
 
   String developerName = developer.getName() != null && !developer.getName().isBlank()
           ? developer.getName().trim() : "Developer";
+
   String githubUrl = developer.getGithubUrl();
   String linkedinUrl = developer.getLinkedinUrl();
+
+  Long followerCount = (Long) request.getAttribute("followerCount");
+  Long followingCount = (Long) request.getAttribute("followingCount");
+
+  if (followerCount == null) followerCount = 0L;
+  if (followingCount == null) followingCount = 0L;
 %>
 
 <!DOCTYPE html>
@@ -71,7 +78,9 @@
               linear-gradient(135deg, #f8f6ff 0%, #f1f5ff 52%, #fff5fb 100%);
     }
 
-    a { -webkit-tap-highlight-color: transparent; }
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
 
     .topbar {
       position: relative;
@@ -190,7 +199,9 @@
       height: 310px;
       top: -205px;
       right: 8%;
-      box-shadow: 0 0 0 28px rgba(255,255,255,.06), 0 0 0 58px rgba(255,255,255,.05);
+      box-shadow:
+              0 0 0 28px rgba(255,255,255,.06),
+              0 0 0 58px rgba(255,255,255,.05);
     }
 
     .cover::after {
@@ -246,6 +257,44 @@
       margin: 8px 0 0;
       color: var(--muted);
       font-size: 14px;
+    }
+
+    /* Followers / Following */
+    .profile-stats {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin: 28px 0 8px;
+    }
+
+    .profile-stats a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 110px;
+      padding: 12px 18px;
+      border-radius: 15px;
+      color: var(--ink);
+      text-decoration: none;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .profile-stats a:hover {
+      background: #f7f5ff;
+      transform: translateY(-2px);
+    }
+
+    .profile-stats strong {
+      font-size: 23px;
+      line-height: 1.2;
+      color: #4f3ba8;
+    }
+
+    .profile-stats span {
+      margin-top: 5px;
+      color: #77758f;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     .section-divider {
@@ -331,11 +380,24 @@
       font-weight: 900;
     }
 
-    .github-icon { background: linear-gradient(135deg, #27263a, #55536e); }
-    .linkedin-icon { background: linear-gradient(135deg, #0878b9, #4a9fe0); }
+    .github-icon {
+      background: linear-gradient(135deg, #27263a, #55536e);
+    }
 
-    .social-copy { min-width: 0; }
-    .social-title { display: block; font-size: 14px; font-weight: 850; }
+    .linkedin-icon {
+      background: linear-gradient(135deg, #0878b9, #4a9fe0);
+    }
+
+    .social-copy {
+      min-width: 0;
+    }
+
+    .social-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 850;
+    }
+
     .social-subtitle {
       display: block;
       margin-top: 4px;
@@ -385,26 +447,85 @@
     }
 
     @keyframes rise-in {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @media (max-width: 600px) {
-      .topbar { padding: 14px 18px; }
-      .brand { font-size: 20px; }
-      .back-link { padding: 9px 11px; font-size: 13px; }
-      main { width: min(100% - 24px, 920px); margin-top: 32px; }
-      .cover { height: 135px; }
-      .identity-row { align-items: flex-start; flex-direction: column; gap: 13px; margin-top: -48px; }
-      .avatar { width: 96px; height: 96px; border-radius: 25px; font-size: 36px; }
-      .identity-text { padding: 0; }
-      .profile-content { padding-bottom: 30px; }
-      .section-divider { margin: 24px 0 21px; }
-      .links { grid-template-columns: 1fr; }
+      .topbar {
+        padding: 14px 18px;
+      }
+
+      .brand {
+        font-size: 20px;
+      }
+
+      .back-link {
+        padding: 9px 11px;
+        font-size: 13px;
+      }
+
+      main {
+        width: min(100% - 24px, 920px);
+        margin-top: 32px;
+      }
+
+      .cover {
+        height: 135px;
+      }
+
+      .identity-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 13px;
+        margin-top: -48px;
+      }
+
+      .avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 25px;
+        font-size: 36px;
+      }
+
+      .identity-text {
+        padding: 0;
+      }
+
+      .profile-content {
+        padding-bottom: 30px;
+      }
+
+      .profile-stats {
+        gap: 12px;
+        justify-content: space-around;
+      }
+
+      .profile-stats a {
+        min-width: 100px;
+        padding: 10px;
+      }
+
+      .section-divider {
+        margin: 24px 0 21px;
+      }
+
+      .links {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
+      *,
+      *::before,
+      *::after {
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
         scroll-behavior: auto !important;
@@ -415,30 +536,69 @@
 </head>
 
 <body>
+
 <header class="topbar">
   <a class="brand" href="<%= request.getContextPath() %>/dashboard.jsp">
     <span class="brand-mark">P</span>
     <span>ProjectHub</span>
   </a>
+
   <a class="back-link" href="<%= request.getContextPath() %>/dashboard.jsp">
     <span aria-hidden="true">←</span> Dashboard
   </a>
 </header>
 
 <main>
+
   <p class="eyebrow">Developer community</p>
-  <h2 class="page-title">Meet the <span>developer</span></h2>
+
+  <h2 class="page-title">
+    Meet the <span>developer</span>
+  </h2>
 
   <section class="profile-card" aria-label="Developer profile">
+
     <div class="cover" aria-hidden="true"></div>
 
     <div class="profile-content">
+
       <div class="identity-row">
-        <div class="avatar" aria-hidden="true"><%= escapeHtml(developerName.substring(0, 1)) %></div>
-        <div class="identity-text">
-          <h1><%= escapeHtml(developerName) %></h1>
-          <p class="subtitle">ProjectHub community member</p>
+
+        <div class="avatar" aria-hidden="true">
+          <%= escapeHtml(developerName.substring(0, 1)) %>
         </div>
+
+        <div class="identity-text">
+
+          <h1>
+            <%= escapeHtml(developerName) %>
+          </h1>
+
+          <p class="subtitle">
+            ProjectHub community member
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- Followers / Following -->
+      <div class="profile-stats">
+
+        <a href="<%= request.getContextPath() %>/followers?id=<%= developer.getId() %>">
+          <strong>
+            <%= followerCount %>
+          </strong>
+          <span>Followers</span>
+        </a>
+
+        <a href="<%= request.getContextPath() %>/following?id=<%= developer.getId() %>">
+          <strong>
+            <%= followingCount %>
+          </strong>
+          <span>Following</span>
+        </a>
+
       </div>
 
       <div class="section-divider"></div>
@@ -447,8 +607,15 @@
         <span class="section-icon" aria-hidden="true">✦</span>
         About
       </h2>
+
       <p class="bio">
-        <% if (developer.getBio() != null && !developer.getBio().isBlank()) { %><%= escapeHtml(developer.getBio()) %><% } else { %><span class="empty-bio">This developer hasn't added a bio yet.</span><% } %>
+        <% if (developer.getBio() != null && !developer.getBio().isBlank()) { %>
+        <%= escapeHtml(developer.getBio()) %>
+        <% } else { %>
+        <span class="empty-bio">
+            This developer hasn't added a bio yet.
+          </span>
+        <% } %>
       </p>
 
       <div class="section-divider"></div>
@@ -459,40 +626,83 @@
       </h2>
 
       <div class="links">
+
         <% if (isSafeProfileUrl(githubUrl)) { %>
-        <a class="profile-link" href="<%= escapeHtml(githubUrl.trim()) %>" target="_blank" rel="noopener noreferrer">
-          <span class="social-icon github-icon" aria-hidden="true">GH</span>
+
+        <a class="profile-link"
+           href="<%= escapeHtml(githubUrl.trim()) %>"
+           target="_blank"
+           rel="noopener noreferrer">
+
+          <span class="social-icon github-icon" aria-hidden="true">
+            GH
+          </span>
+
           <span class="social-copy">
-              <span class="social-title">GitHub</span>
-              <span class="social-subtitle">View code and projects</span>
+            <span class="social-title">GitHub</span>
+            <span class="social-subtitle">
+              View code and projects
             </span>
+          </span>
+
           <span class="arrow" aria-hidden="true">↗</span>
+
         </a>
+
         <% } %>
+
 
         <% if (isSafeProfileUrl(linkedinUrl)) { %>
-        <a class="profile-link" href="<%= escapeHtml(linkedinUrl.trim()) %>" target="_blank" rel="noopener noreferrer">
-          <span class="social-icon linkedin-icon" aria-hidden="true">in</span>
+
+        <a class="profile-link"
+           href="<%= escapeHtml(linkedinUrl.trim()) %>"
+           target="_blank"
+           rel="noopener noreferrer">
+
+          <span class="social-icon linkedin-icon" aria-hidden="true">
+            in
+          </span>
+
           <span class="social-copy">
-              <span class="social-title">LinkedIn</span>
-              <span class="social-subtitle">Connect professionally</span>
+            <span class="social-title">LinkedIn</span>
+            <span class="social-subtitle">
+              Connect professionally
             </span>
+          </span>
+
           <span class="arrow" aria-hidden="true">↗</span>
+
         </a>
+
         <% } %>
 
-        <% if (!isSafeProfileUrl(githubUrl) && !isSafeProfileUrl(linkedinUrl)) { %>
-        <div class="no-links">No social links have been added yet. Check back later for ways to connect.</div>
+
+        <% if (!isSafeProfileUrl(githubUrl)
+                && !isSafeProfileUrl(linkedinUrl)) { %>
+
+        <div class="no-links">
+          No social links have been added yet.
+          Check back later for ways to connect.
+        </div>
+
         <% } %>
+
       </div>
+
     </div>
+
   </section>
 
   <div class="bottom-action">
+
     <a href="<%= request.getContextPath() %>/dashboard.jsp">
-      <span aria-hidden="true">⌂</span> Back to developer dashboard
+      <span aria-hidden="true">⌂</span>
+      Back to developer dashboard
     </a>
+
   </div>
+
 </main>
+
 </body>
 </html>

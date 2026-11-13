@@ -194,4 +194,38 @@ public class FollowDAO {
                     .getResultList();
         }
     }
+    public Long countFollowers(Long userId) {
+        if (userId == null) {
+            return 0L;
+        }
+
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            return session.createQuery(
+                            "SELECT COUNT(f) FROM Follow f " +
+                                    "WHERE f.followed.id = :userId",
+                            Long.class)
+                    .setParameter("userId", userId)
+                    .getSingleResult();
+        }
+    }
+
+    public Long countFollowing(Long userId) {
+        if (userId == null) {
+            return 0L;
+        }
+
+        try (Session session =
+                     HibernateUtil.getSessionFactory().openSession()) {
+
+            return session.createQuery(
+                            "SELECT COUNT(f) FROM Follow f " +
+                                    "WHERE f.follower.id = :userId",
+                            Long.class)
+                    .setParameter("userId", userId)
+                    .getSingleResult();
+        }
+    }
 }
+

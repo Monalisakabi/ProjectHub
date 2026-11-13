@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.projecthub.service.FollowService;
 
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ import java.io.IOException;
 public class PublicProfileServlet extends HttpServlet {
 
     private final UserDAO userDAO = new UserDAO();
+    private final FollowService followService = new FollowService();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -57,6 +59,11 @@ public class PublicProfileServlet extends HttpServlet {
         }
 
         request.setAttribute("profileUser", developer);
+        Long followerCount = followService.getFollowerCount(developerId);
+        Long followingCount = followService.getFollowingCount(developerId);
+
+        request.setAttribute("followerCount", followerCount);
+        request.setAttribute("followingCount", followingCount);
 
         request.getRequestDispatcher("/public-profile.jsp")
                 .forward(request, response);

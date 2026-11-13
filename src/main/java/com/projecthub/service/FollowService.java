@@ -93,4 +93,11 @@ public class FollowService {
 
         return followDAO.getFollowing(userId);
     }
+    public Long getFollowerCount(Long userId) {
+        return followDAO.countFollowers(userId);
+    }
+
+    public Long getFollowingCount(Long userId) {
+        return followDAO.countFollowing(userId);
+    }
 }
